@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mapa con Formulario</title>
+  <!-- Estilos de Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    form {
+      max-width: 400px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Mapa y Formulario</h2>
+  <div id="map"></div>
+
+  <form id="eventoForm">
+    <label for="lat">Latitud:</label>
+    <input type="text" id="lat" name="lat" readonly>
+
+    <label for="lng">Longitud:</label>
+    <input type="text" id="lng" name="lng" readonly>
+
+    <label for="evento">Evento:</label>
+    <input type="text" id="evento" name="evento" required>
+
+    <label for="magnitud">Magnitud:</label>
+    <input type="text" id="magnitud" name="magnitud" required>
+
+    <label for="foto">Foto (PNG):</label>
+    <input type="file" id="foto" name="foto" accept="image/png" required>
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <!-- Scripts de Leaflet -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Inicializar mapa
+    var map = L.map('map').setView([0, 0], 2);
+
+    // Cargar tiles de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Obtener ubicación del usuario
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+
+        // Centrar mapa y añadir marcador
+        map.setView([lat, lng], 13);
+        L.marker([lat, lng]).addTo(map)
+          .bindPopup("Tu ubicación")
+          .openPopup();
+
+        // Rellenar campos del formulario
+        document.getElementById('lat').value = lat;
+        document.getElementById('lng').value = lng;
+      }, function(error) {
+        alert("No se pudo obtener tu ubicación: " + error.message);
+      });
+    } else {
+      alert("La geolocalización no está soportada en este navegador.");
+    }
+
+    // Manejo del formulario (ejemplo simple)
+    document.getElementById('eventoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert("Formulario enviado. Aquí podrías procesar los datos.");
+    });
+  </script>
+</body>
+</html>
